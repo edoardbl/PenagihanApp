@@ -67,7 +67,52 @@
       <!-- List Tagihan akan dirender oleh JS -->
     </div>
   </div>
+  
+  <!-- ⭐ VIEW: DETAIL ANGGOTA -->
+<div id="viewDetail" class="app-view" style="display:none;">
+  <button id="btnBackDetail" style="background:none; border:none; color:#8B0000; font-weight:700; font-size:14px; margin-bottom:15px; cursor:pointer;">← Kembali ke Beranda</button>
+  
+  <div id="detailContent">
+    <!-- Data akan dirender oleh detail.js -->
+  </div>
 
+  <button id="btnBukaKunjungan" style="width:100%; background:#2E7D32; color:white; padding:15px; border-radius:10px; font-weight:800; font-size:16px; border:none; margin-top:20px; cursor:pointer;">
+    🏠 Catat Kunjungan
+  </button>
+</div>
+
+<!-- ⭐ VIEW: FORM KUNJUNGAN -->
+<div id="viewKunjungan" class="app-view" style="display:none;">
+  <button id="btnBatalKunjungan" style="background:none; border:none; color:#8B0000; font-weight:700; font-size:14px; margin-bottom:15px; cursor:pointer;">← Batal</button>
+  
+  <h2 style="color:#8B0000; font-size:18px;">Form Kunjungan</h2>
+
+  <div class="form-group">
+    <label>STATUS KUNJUNGAN</label>
+    <select id="selectStatusModern" class="form-input">
+      <option value="">-- Pilih Status --</option>
+      <option value="Bayar Tunai">✅ Bayar Tunai</option>
+      <option value="Belum Bayar">❌ Belum Bayar</option>
+      <option value="Janji Bayar">📅 Janji Bayar</option>
+      <option value="Tidak Ditemui">🚫 Tidak Ditemui</option>
+    </select>
+  </div>
+
+  <div class="form-group" style="margin-top:15px;">
+    <label>GPS LOKASI</label>
+    <div id="gpsInfoModern" style="font-size:12px; font-weight:700; color:#888;">⏳ Menyiapkan GPS...</div>
+  </div>
+
+  <div class="form-group" style="margin-top:15px;">
+    <label>TANDA TANGAN (TTD)</label>
+    <canvas id="ttdCanvasModern" style="width:100%; height:200px; background:white; border:2px dashed #DDD; border-radius:8px;"></canvas>
+  </div>
+
+  <button id="btnSimpanKunjungan" style="width:100%; background:#8B0000; color:#FFD700; padding:15px; border-radius:10px; font-weight:800; font-size:16px; border:none; margin-top:20px; cursor:pointer;">
+    💾 Simpan Kunjungan
+  </button>
+</div>
+  
 </div>
 
 <!-- ⭐ PENTING: Gunakan type="module" untuk mengaktifkan ES6 Imports -->
