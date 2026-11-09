@@ -70,28 +70,14 @@ const renderTagihanList = (list) => {
   const container = document.getElementById('listTagihanContainer');
   if (!container) return;
 
-  if (list.length === 0) {
+  if (!list || list.length === 0) {
     container.innerHTML = '<div style="text-align:center; padding:20px; color:#888;">Tidak ada tagihan</div>';
     return;
   }
-    // Ambil Tagihan Halaman 1
-    const resTagihan = await api.getTagihanPage(currentUser.nama, currentUser.level, [], 'semua', 1, 10);
-    
-    // ⭐ DEBUG DATA
-    console.log('=== DATA TAGIHAN DARI SERVER ===');
-    console.log('User yang login:', currentUser.nama);
-    console.log('Respon Server:', resTagihan);
-    if (resTagihan && resTagihan.list) {
-       console.log('3 Nama Pertama:', resTagihan.list.slice(0, 3).map(x => x.nama));
-    }
-    // ⭐ END DEBUG
 
-    if (resTagihan && resTagihan.list) {
-      renderTagihanList(resTagihan.list);
-    }
-  // Render list menggunakan .map() (Modern JS Array Method)
+  // Render list menggunakan .map()
   const html = list.map(item => `
-    <div onclick="bukaDetail(${item.noRek})" style="background:white; padding:15px; border-radius:10px; margin-bottom:10px; border-left:4px solid ${item.menunggak ? '#C62828' : '#2E7D32'}; box-shadow:0 2px 5px rgba(0,0,0,0.05); cursor:pointer;">
+    <div onclick="bukaDetailAnggota('${item.noRek}')" style="background:white; padding:15px; border-radius:10px; margin-bottom:10px; border-left:4px solid ${item.menunggak ? '#C62828' : '#2E7D32'}; box-shadow:0 2px 5px rgba(0,0,0,0.05); cursor:pointer;">
       <div style="font-weight:800; color:#8B0000; font-size:14px;">${item.nama}</div>
       <div style="font-size:11px; color:#666; margin-top:2px;">${item.noRek} - ${item.desa}</div>
       <div style="margin-top:8px; font-size:13px; font-weight:700; color:#C62828;">Tagihan: Rp ${(item.tagihanNormal || 0).toLocaleString('id-ID')}</div>
