@@ -48,3 +48,5 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 });
+// Daftarkan fungsi agar bisa dipanggil dari HTML
+window.bukaDetailAnggota = bukaDetailAnggota;
