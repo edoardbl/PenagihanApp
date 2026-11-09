@@ -4,6 +4,8 @@
 
 import { initLogin } from './login.js';
 import { initBeranda } from './beranda.js';
+import { initDetail, bukaDetailAnggota } from './detail.js';
+import { initKunjungan } from './kunjungan.js';
 
 // ⭐ MENDENGARKAN BALASAN DARI GAS
 window.addEventListener('message', function(event) {
@@ -28,6 +30,8 @@ document.addEventListener('DOMContentLoaded', () => {
   // Inisialisasi Halaman
   initLogin();
   initBeranda();
+  initDetail();
+  initKunjungan();
 
   // Cek apakah user sudah login (session)
   const savedUser = localStorage.getItem('user');
