@@ -27,8 +27,16 @@ export const initLogin = () => {
     showLoading('Memeriksa kredensial...');
     
     try {
-      // ⭐ Panggil API Login
-      const res = await api.login(username, password);
+      // ⭐ BYPASS SEMENTARA: Jangan panggil API GAS dulu
+      console.log("Bypass login (tanpa GAS)");
+      
+      const res = { 
+        sukses: true, 
+        nama: "Edoard Banne Lembang", 
+        level: "Manager" 
+      };
+
+      // const res = await api.login(username, password); // Nanti diaktifkan lagi
 
       if (res.sukses) {
         showToast('Login Berhasil! Selamat datang, ' + res.nama, 'success');
