@@ -1,5 +1,5 @@
 // ==========================================
-// FILE: api.js
+// FILE: api.js (Dengan Timeout)
 // ==========================================
 
 export const callGAS = (functionName, ...args) => {
@@ -9,7 +9,20 @@ export const callGAS = (functionName, ...args) => {
     window._gasCallbacks = window._gasCallbacks || {};
     window._gasCallbacks[requestId] = { resolve, reject };
 
-    // Kirim pesan ke GAS
+    // ⭐ TIMEOUT 15 DETIK
+    const timeoutId = setTimeout(() => {
+      if (window._gasCallbacks[requestId]) {
+        delete window._gasCallbacks[requestId];
+        reject(new Error('Koneksi ke GAS Timeout (15 detik). Cek koneksi atau fungsi GAS.'));
+      }
+    }, 15000);
+
+    // Bungkus resolve/reject untuk membersihkan timeout
+    window._gasCallbacks[requestId] = {
+      resolve: (data) => { clearTimeout(timeoutId); resolve(data); },
+      reject: (err) => { clearTimeout(timeoutId); reject(err); }
+    };
+
     window.parent.postMessage({
       action: 'callGAS',
       requestId: requestId,
