@@ -74,7 +74,21 @@ const renderTagihanList = (list) => {
     container.innerHTML = '<div style="text-align:center; padding:20px; color:#888;">Tidak ada tagihan</div>';
     return;
   }
+    // Ambil Tagihan Halaman 1
+    const resTagihan = await api.getTagihanPage(currentUser.nama, currentUser.level, [], 'semua', 1, 10);
+    
+    // ⭐ DEBUG DATA
+    console.log('=== DATA TAGIHAN DARI SERVER ===');
+    console.log('User yang login:', currentUser.nama);
+    console.log('Respon Server:', resTagihan);
+    if (resTagihan && resTagihan.list) {
+       console.log('3 Nama Pertama:', resTagihan.list.slice(0, 3).map(x => x.nama));
+    }
+    // ⭐ END DEBUG
 
+    if (resTagihan && resTagihan.list) {
+      renderTagihanList(resTagihan.list);
+    }
   // Render list menggunakan .map() (Modern JS Array Method)
   const html = list.map(item => `
     <div onclick="bukaDetail(${item.noRek})" style="background:white; padding:15px; border-radius:10px; margin-bottom:10px; border-left:4px solid ${item.menunggak ? '#C62828' : '#2E7D32'}; box-shadow:0 2px 5px rgba(0,0,0,0.05); cursor:pointer;">
