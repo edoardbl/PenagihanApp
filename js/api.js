@@ -1,5 +1,5 @@
 // ==========================================
-// FILE: api.js (Dengan Timeout)
+// FILE: api.js
 // ==========================================
 
 export const callGAS = (functionName, ...args) => {
@@ -9,15 +9,13 @@ export const callGAS = (functionName, ...args) => {
     window._gasCallbacks = window._gasCallbacks || {};
     window._gasCallbacks[requestId] = { resolve, reject };
 
-    // ⭐ TIMEOUT 15 DETIK
     const timeoutId = setTimeout(() => {
       if (window._gasCallbacks[requestId]) {
         delete window._gasCallbacks[requestId];
-        reject(new Error('Koneksi ke GAS Timeout (15 detik). Cek koneksi atau fungsi GAS.'));
+        reject(new Error('Koneksi ke GAS Timeout (15 detik).'));
       }
     }, 15000);
 
-    // Bungkus resolve/reject untuk membersihkan timeout
     window._gasCallbacks[requestId] = {
       resolve: (data) => { clearTimeout(timeoutId); resolve(data); },
       reject: (err) => { clearTimeout(timeoutId); reject(err); }
@@ -32,13 +30,13 @@ export const callGAS = (functionName, ...args) => {
   });
 };
 
+// ⭐ TES KONEKSI SAAT PERTAMA KALI DIMUAT
+console.log("Mencoba tes koneksi ke GAS...");
+callGAS('tesKoneksi')
+  .then(res => console.log("✅ TES BERHASIL:", res))
+  .catch(err => console.error("❌ TES GAGAL:", err.message));
+
 export const api = {
+  // ... (sisa fungsi api tetap sama seperti sebelumnya) ...
   login: (username, password) => callGAS('cekLogin', username, password),
-  getBeranda: (nama, level, filterAktivis, filterMenunggak) => 
-    callGAS('getDashboardDanPengingat', nama, level, filterAktivis, filterMenunggak),
-  getTagihanPage: (nama, level, filterAktivis, filterMenunggak, page, limit) => 
-    callGAS('getDaftarTagihanPaginated', nama, level, filterAktivis, filterMenunggak, page, limit),
-  getDetailAnggota: (noRek, username, level) => 
-    callGAS('getDetailAnggota', noRek, username, level),
-  simpanKunjungan: (data) => callGAS('simpanKunjungan', data)
 };
