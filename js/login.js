@@ -27,31 +27,21 @@ export const initLogin = () => {
     showLoading('Memeriksa kredensial...');
     
     try {
-      // ⭐ BYPASS SEMENTARA: Jangan panggil API GAS dulu
-      console.log("Bypass login (tanpa GAS)");
+      showLoading('Memeriksa kredensial...');
       
-      const res = { 
-        sukses: true, 
-        nama: "Edoard Banne Lembang", 
-        level: "Manager" 
-      };
-
-      // const res = await api.login(username, password); // Nanti diaktifkan lagi
+      // ⭐ Panggil API GAS (Hapus bypass-nya)
+      const res = await api.login(username, password);
 
       if (res.sukses) {
         showToast('Login Berhasil! Selamat datang, ' + res.nama, 'success');
-        
-        // Simpan session (contoh sederhana di localStorage)
         localStorage.setItem('user', JSON.stringify(res));
         
-        // Sembunyikan login, tampilkan beranda (Routing sederhana)
         document.getElementById('viewLoginModern').style.display = 'none';
         document.getElementById('viewBerandaModern').style.display = 'block';
         
-        // Panggil fungsi muat beranda
         window.dispatchEvent(new CustomEvent('userLoggedIn', { detail: res }));
       } else {
-        errorEl.textContent = res.pesan || 'Login gagal. Periksa kembali akun Anda.';
+        errorEl.textContent = res.pesan || 'Login gagal.';
         errorEl.style.display = 'block';
       }
     } catch (error) {
