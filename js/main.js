@@ -1,5 +1,5 @@
 // ==========================================
-// FILE: main.js (UPDATE FASE 2)
+// FILE: main.js
 // ==========================================
 
 import { initLogin } from './login.js';
@@ -7,46 +7,44 @@ import { initBeranda } from './beranda.js';
 import { initDetail, bukaDetailAnggota } from './detail.js';
 import { initKunjungan } from './kunjungan.js';
 
-// ⭐ MENDENGARKAN BALASAN DARI GAS
+// ⭐ 1. MENDENGARKAN BALASAN DARI GAS (Jembatan PostMessage)
 window.addEventListener('message', function(event) {
   const data = event.data;
   if (data && data.action === 'responseGAS') {
-    const callback = window._gasCallbacks[data.requestId];
+    const callback = window._gasCallbacks && window._gasCallbacks[data.requestId];
     if (callback) {
       if (data.success) {
         callback.resolve(data.data);
       } else {
         callback.reject(new Error(data.error));
       }
-      // Hapus callback dari memori setelah dipakai
       delete window._gasCallbacks[data.requestId];
     }
   }
 });
 
+// ⭐ 2. JALANKAN SAAT HALAMAN DIMUAT
 document.addEventListener('DOMContentLoaded', () => {
-  console.log('🚀 Aplikasi Modern v2 - Fase 2 Berjalan!');
+  console.log('🚀 Aplikasi Modern v2 Berjalan!');
   
-  // Inisialisasi Halaman
   initLogin();
   initBeranda();
   initDetail();
   initKunjungan();
-
-  // Cek apakah user sudah login (session)
+  
+  // Cek session login
   const savedUser = localStorage.getItem('user');
   if (savedUser) {
     try {
       const user = JSON.parse(savedUser);
       document.getElementById('viewLoginModern').style.display = 'none';
       document.getElementById('viewBerandaModern').style.display = 'block';
-      
-      // Trigger event agar beranda memuat data
       window.dispatchEvent(new CustomEvent('userLoggedIn', { detail: user }));
     } catch (e) {
       console.error('Session error:', e);
     }
   }
 });
-// Daftarkan fungsi agar bisa dipanggil dari HTML
+
+// ⭐ 3. DAFTARKAN FUNGSI KE WINDOW (Agar bisa dipanggil dari HTML onclick)
 window.bukaDetailAnggota = bukaDetailAnggota;
