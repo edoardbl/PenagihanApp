@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -6,10 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Aplikasi Penagihan CU v2</title>
   <style>
-    /* CSS Dasar (Bisa dipindah ke style.css nanti) */
     * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-    body { background: #FDF6E3; margin: 0; padding: 15px; }
-    .app-container { max-width: 500px; margin: 0 auto; }
+    body { background: #FDF6E3; margin: 0; padding: 15px; color: #333; }
+    .app-container { max-width: 500px; margin: 0 auto; background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
     
     /* Form Styles */
     .form-group { margin-bottom: 15px; }
@@ -17,16 +15,28 @@
     .form-input { width: 100%; padding: 12px; border: 2px solid #DDD; border-radius: 8px; font-size: 14px; }
     .form-input:focus { border-color: #FFD700; outline: none; }
     
-    .btn-primary { width: 100%; background: #8B0000; color: #FFD700; border: none; padding: 15px; border-radius: 8px; font-size: 16px; font-weight: 800; cursor: pointer; }
+    .btn-primary { width: 100%; background: #8B0000; color: #FFD700; border: none; padding: 15px; border-radius: 8px; font-size: 16px; font-weight: 800; cursor: pointer; transition: background 0.2s; }
     .btn-primary:hover { background: #A31515; }
+
+    /* Card List Tagihan */
+    .tagihan-card { background: #fff; border: 1px solid #eee; border-left: 5px solid #8B0000; padding: 12px 15px; border-radius: 8px; margin-bottom: 10px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: transform 0.1s; }
+    .tagihan-card:active { transform: scale(0.98); }
+    .tagihan-nama { font-weight: 700; font-size: 14px; color: #333; }
+    .tagihan-nominal { font-weight: 800; color: #8B0000; font-size: 14px; }
+    .tagihan-status { font-size: 11px; padding: 3px 8px; border-radius: 4px; display: inline-block; margin-top: 4px; font-weight: 600; }
+    .status-pending { background: #FFF3CD; color: #856404; }
+    .status-lunas { background: #D4EDDA; color: #155724; }
+
+    /* Canvas TTD */
+    #ttdCanvasModern { width: 100%; height: 200px; background: #fafafa; border: 2px dashed #DDD; border-radius: 8px; cursor: crosshair; touch-action: none; }
   </style>
 </head>
 <body>
 
 <div class="app-container">
   
-  <!-- ⭐ VIEW: LOGIN (Tampil Pertama Kali) -->
-  <div id="viewLoginModern" style="display:block; padding-top:50px;">
+  <!-- ⭐ VIEW: LOGIN -->
+  <div id="viewLoginModern" style="display:block; padding-top:20px;">
     <div style="text-align:center; margin-bottom:30px;">
       <div style="font-size:60px; margin-bottom:10px;">🏦</div>
       <h2 style="color:#8B0000; margin:0;">Aplikasi Penagihan</h2>
@@ -37,85 +47,273 @@
 
     <div class="form-group">
       <label>USERNAME</label>
-      <input type="text" id="inputUsernameModern" class="form-input" placeholder="Masukkan username">
+      <input type="text" id="inputUsernameModern" class="form-input" placeholder="Masukkan username (bebas)">
     </div>
     <div class="form-group">
       <label>PASSWORD</label>
-      <input type="password" id="inputPasswordModern" class="form-input" placeholder="Masukkan password">
+      <input type="password" id="inputPasswordModern" class="form-input" placeholder="Masukkan password (bebas)">
     </div>
 
     <button id="btnLoginModern" class="btn-primary">MASUK APLIKASI</button>
   </div>
 
-  <!-- ⭐ VIEW: BERANDA (Tampil Setelah Login) -->
+  <!-- ⭐ VIEW: BERANDA -->
   <div id="viewBerandaModern" style="display:none;">
     <div style="background:#8B0000; color:white; padding:15px; border-radius:10px; margin-bottom:15px; display:flex; justify-content:space-between; align-items:center;">
       <div>
-        <div style="font-weight:800; font-size:16px;">Beranda</div>
+        <div style="font-weight:800; font-size:16px;">Beranda Penagih</div>
         <div style="font-size:11px; color:#FFD700;">Aplikasi Modern v2</div>
       </div>
-      <div style="font-size:24px;">👤</div>
+      <div id="btnLogout" style="font-size:20px; cursor:pointer;" title="Keluar">🚪</div>
     </div>
 
     <div id="dashboardContainer">
-      <!-- Dashboard akan dirender oleh JS -->
-      <div style="text-align:center; padding:20px; color:#888;">⏳ Memuat dashboard...</div>
+      <div style="background:#FFF8E1; padding:12px; border-radius:8px; margin-bottom:15px; border:1px solid #FFE0B2;">
+        <div style="font-size:12px; color:#8B6914; font-weight:700;">TARGET HARI INI</div>
+        <div style="font-size:20px; font-weight:800; color:#8B0000;" id="txtTotalTarget">Rp 3.500.000</div>
+      </div>
     </div>
 
     <h3 style="color:#8B0000; font-size:14px; margin-top:20px; margin-bottom:10px;">DAFTAR TAGIHAN</h3>
     <div id="listTagihanContainer">
-      <!-- List Tagihan akan dirender oleh JS -->
+      <!-- Diisi oleh JS -->
     </div>
   </div>
   
   <!-- ⭐ VIEW: DETAIL ANGGOTA -->
-<div id="viewDetail" class="app-view" style="display:none;">
-  <button id="btnBackDetail" style="background:none; border:none; color:#8B0000; font-weight:700; font-size:14px; margin-bottom:15px; cursor:pointer;">← Kembali ke Beranda</button>
-  
-  <div id="detailContent">
-    <!-- Data akan dirender oleh detail.js -->
+  <div id="viewDetail" style="display:none;">
+    <button id="btnBackDetail" style="background:none; border:none; color:#8B0000; font-weight:700; font-size:14px; margin-bottom:15px; cursor:pointer;">← Kembali ke Beranda</button>
+    
+    <div id="detailContent" style="background:#F9F9F9; padding:15px; border-radius:8px; border:1px solid #EEE;">
+      <!-- Diisi oleh JS -->
+    </div>
+
+    <button id="btnBukaKunjungan" style="width:100%; background:#2E7D32; color:white; padding:15px; border-radius:10px; font-weight:800; font-size:16px; border:none; margin-top:20px; cursor:pointer;">
+      🏠 Catat Kunjungan
+    </button>
   </div>
 
-  <button id="btnBukaKunjungan" style="width:100%; background:#2E7D32; color:white; padding:15px; border-radius:10px; font-weight:800; font-size:16px; border:none; margin-top:20px; cursor:pointer;">
-    🏠 Catat Kunjungan
-  </button>
+  <!-- ⭐ VIEW: FORM KUNJUNGAN -->
+  <div id="viewKunjungan" style="display:none;">
+    <button id="btnBatalKunjungan" style="background:none; border:none; color:#8B0000; font-weight:700; font-size:14px; margin-bottom:15px; cursor:pointer;">← Batal</button>
+    
+    <h2 style="color:#8B0000; font-size:18px; margin-top:0;">Form Kunjungan</h2>
+
+    <div class="form-group">
+      <label>STATUS KUNJUNGAN</label>
+      <select id="selectStatusModern" class="form-input">
+        <option value="">-- Pilih Status --</option>
+        <option value="Bayar Tunai">✅ Bayar Tunai</option>
+        <option value="Belum Bayar">❌ Belum Bayar</option>
+        <option value="Janji Bayar">📅 Janji Bayar</option>
+        <option value="Tidak Ditemui">🚫 Tidak Ditemui</option>
+      </select>
+    </div>
+
+    <div class="form-group" style="margin-top:15px;">
+      <label>GPS LOKASI</label>
+      <div id="gpsInfoModern" style="font-size:12px; font-weight:700; color:#888;">⏳ Menyiapkan GPS...</div>
+    </div>
+
+    <div class="form-group" style="margin-top:15px;">
+      <label>TANDA TANGAN (TTD)</label>
+      <canvas id="ttdCanvasModern"></canvas>
+      <button id="btnClearCanvas" style="margin-top:5px; background:#ccc; border:none; padding:5px 10px; border-radius:4px; font-size:11px; cursor:pointer;">Ulangi TTD</button>
+    </div>
+
+    <button id="btnSimpanKunjungan" class="btn-primary" style="margin-top:10px;">
+      💾 Simpan Kunjungan
+    </button>
+  </div>
+  
 </div>
 
-<!-- ⭐ VIEW: FORM KUNJUNGAN -->
-<div id="viewKunjungan" class="app-view" style="display:none;">
-  <button id="btnBatalKunjungan" style="background:none; border:none; color:#8B0000; font-weight:700; font-size:14px; margin-bottom:15px; cursor:pointer;">← Batal</button>
-  
-  <h2 style="color:#8B0000; font-size:18px;">Form Kunjungan</h2>
+<script>
+  // Data Mock Tagihan
+  const dataTagihan = [
+    { id: 1, nama: "Bapak Yohanes", nominal: "Rp 1.250.000", tempo: "12 Nov 2026", alamat: "Jl. Merdeka No. 45", status: "Pending" },
+    { id: 2, nama: "Ibu Maria", nominal: "Rp 850.000", tempo: "13 Nov 2026", alamat: "Jl. Ahmad Yani No. 12", status: "Pending" },
+    { id: 3, nama: "Bapak Markus", nominal: "Rp 1.400.000", tempo: "15 Nov 2026", alamat: "Jl. Sudirman Blok B", status: "Pending" }
+  ];
 
-  <div class="form-group">
-    <label>STATUS KUNJUNGAN</label>
-    <select id="selectStatusModern" class="form-input">
-      <option value="">-- Pilih Status --</option>
-      <option value="Bayar Tunai">✅ Bayar Tunai</option>
-      <option value="Belum Bayar">❌ Belum Bayar</option>
-      <option value="Janji Bayar">📅 Janji Bayar</option>
-      <option value="Tidak Ditemui">🚫 Tidak Ditemui</option>
-    </select>
-  </div>
+  let selectedTagihan = null;
+  let canvas, ctx, isDrawing = false;
 
-  <div class="form-group" style="margin-top:15px;">
-    <label>GPS LOKASI</label>
-    <div id="gpsInfoModern" style="font-size:12px; font-weight:700; color:#888;">⏳ Menyiapkan GPS...</div>
-  </div>
+  // Navigasi View
+  function switchView(viewId) {
+    ['viewLoginModern', 'viewBerandaModern', 'viewDetail', 'viewKunjungan'].forEach(id => {
+      document.getElementById(id).style.display = (id === viewId) ? 'block' : 'none';
+    });
+  }
 
-  <div class="form-group" style="margin-top:15px;">
-    <label>TANDA TANGAN (TTD)</label>
-    <canvas id="ttdCanvasModern" style="width:100%; height:200px; background:white; border:2px dashed #DDD; border-radius:8px;"></canvas>
-  </div>
+  // 1. Login Logic
+  document.getElementById('btnLoginModern').addEventListener('click', () => {
+    const user = document.getElementById('inputUsernameModern').value.trim();
+    const pass = document.getElementById('inputPasswordModern').value.trim();
+    const errBox = document.getElementById('loginErrorModern');
 
-  <button id="btnSimpanKunjungan" style="width:100%; background:#8B0000; color:#FFD700; padding:15px; border-radius:10px; font-weight:800; font-size:16px; border:none; margin-top:20px; cursor:pointer;">
-    💾 Simpan Kunjungan
-  </button>
-</div>
-  
-</div>
+    if (!user || !pass) {
+      errBox.style.display = 'block';
+      errBox.textContent = 'Username dan Password wajib diisi!';
+      return;
+    }
 
-<!-- ⭐ PENTING: Gunakan type="module" untuk mengaktifkan ES6 Imports -->
-<script type="module" src="./js/main.js"></script>
+    errBox.style.display = 'none';
+    renderListTagihan();
+    switchView('viewBerandaModern');
+  });
+
+  document.getElementById('btnLogout').addEventListener('click', () => {
+    document.getElementById('inputUsernameModern').value = '';
+    document.getElementById('inputPasswordModern').value = '';
+    switchView('viewLoginModern');
+  });
+
+  // Render List Tagihan di Beranda
+  function renderListTagihan() {
+    const container = document.getElementById('listTagihanContainer');
+    container.innerHTML = '';
+
+    dataTagihan.forEach(item => {
+      const card = document.createElement('div');
+      card.className = 'tagihan-card';
+      card.innerHTML = `
+        <div>
+          <div class="tagihan-nama">${item.nama}</div>
+          <div style="font-size:12px; color:#666;">Jatuh tempo: ${item.tempo}</div>
+          <span class="tagihan-status ${item.status === 'Lunas' ? 'status-lunas' : 'status-pending'}">${item.status}</span>
+        </div>
+        <div style="text-align:right;">
+          <div class="tagihan-nominal">${item.nominal}</div>
+          <div style="font-size:11px; color:#8B6914; margin-top:4px;">Detail →</div>
+        </div>
+      `;
+      card.addEventListener('click', () => {
+        selectedTagihan = item;
+        renderDetailAnggota();
+        switchView('viewDetail');
+      });
+      container.appendChild(card);
+    });
+  }
+
+  // Render Detail Anggota
+  function renderDetailAnggota() {
+    if (!selectedTagihan) return;
+    const content = document.getElementById('detailContent');
+    content.innerHTML = `
+      <h3 style="margin-top:0; color:#8B0000; font-size:16px;">${selectedTagihan.nama}</h3>
+      <p style="margin:5px 0; font-size:13px;"><strong>Alamat:</strong> ${selectedTagihan.alamat}</p>
+      <p style="margin:5px 0; font-size:13px;"><strong>Jatuh Tempo:</strong> ${selectedTagihan.tempo}</p>
+      <p style="margin:5px 0; font-size:13px;"><strong>Jumlah Tagihan:</strong> <span style="color:#8B0000; font-weight:800;">${selectedTagihan.nominal}</span></p>
+      <p style="margin:5px 0; font-size:13px;"><strong>Status:</strong> ${selectedTagihan.status}</p>
+    `;
+  }
+
+  document.getElementById('btnBackDetail').addEventListener('click', () => switchView('viewBerandaModern'));
+
+  // Buka Form Kunjungan & GPS
+  document.getElementById('btnBukaKunjungan').addEventListener('click', () => {
+    switchView('viewKunjungan');
+    initGPS();
+    initCanvas();
+  });
+
+  document.getElementById('btnBatalKunjungan').addEventListener('click', () => switchView('viewDetail'));
+
+  // GPS Geolocation Handler
+  function initGPS() {
+    const gpsInfo = document.getElementById('gpsInfoModern');
+    gpsInfo.textContent = "⏳ Mendapatkan lokasi GPS...";
+    
+    if ("geolocation" in navigator) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const lat = position.coords.latitude.toFixed(6);
+          const lng = position.coords.longitude.toFixed(6);
+          gpsInfo.innerHTML = `✅ Latitude: ${lat}, Longitude: ${lng}`;
+        },
+        (error) => {
+          gpsInfo.innerHTML = `❌ Gagal mengambil GPS: ${error.message}`;
+        },
+        { timeout: 10000, enableHighAccuracy: true }
+      );
+    } else {
+      gpsInfo.textContent = "❌ GPS tidak didukung oleh browser ini.";
+    }
+  }
+
+  // Canvas TTD Setup
+  function initCanvas() {
+    canvas = document.getElementById('ttdCanvasModern');
+    ctx = canvas.getContext('2d');
+    
+    // Set ukuran asli canvas agar tidak blur
+    canvas.width = canvas.offsetWidth;
+    canvas.height = canvas.offsetHeight;
+    
+    ctx.lineWidth = 2;
+    ctx.lineJoin = 'round';
+    ctx.lineCap = 'round';
+    ctx.strokeStyle = '#000';
+
+    // Event Mouse
+    canvas.onmousedown = startDraw;
+    canvas.onmousemove = draw;
+    canvas.onmouseup = stopDraw;
+    canvas.onmouseleave = stopDraw;
+
+    // Event Touch (HP)
+    canvas.ontouchstart = (e) => { startDraw(e.touches[0]); e.preventDefault(); };
+    canvas.ontouchmove = (e) => { draw(e.touches[0]); e.preventDefault(); };
+    canvas.ontouchend = stopDraw;
+  }
+
+  function getPos(e) {
+    const rect = canvas.getBoundingClientRect();
+    return {
+      x: (e.clientX || e.pageX) - rect.left,
+      y: (e.clientY || e.pageY) - rect.top
+    };
+  }
+
+  function startDraw(e) {
+    isDrawing = true;
+    const pos = getPos(e);
+    ctx.beginPath();
+    ctx.moveTo(pos.x, pos.y);
+  }
+
+  function draw(e) {
+    if (!isDrawing) return;
+    const pos = getPos(e);
+    ctx.lineTo(pos.x, pos.y);
+    ctx.stroke();
+  }
+
+  function stopDraw() {
+    isDrawing = false;
+  }
+
+  document.getElementById('btnClearCanvas').addEventListener('click', () => {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+  });
+
+  // Simpan Kunjungan
+  document.getElementById('btnSimpanKunjungan').addEventListener('click', () => {
+    const status = document.getElementById('selectStatusModern').value;
+    if (!status) {
+      alert('Silakan pilih status kunjungan terlebih dahulu!');
+      return;
+    }
+
+    // Update status tagihan lokal
+    selectedTagihan.status = status === 'Bayar Tunai' ? 'Lunas' : 'Pending';
+    alert('Kunjungan berhasil disimpan!');
+    renderListTagihan();
+    switchView('viewBerandaModern');
+  });
+</script>
+
 </body>
 </html>
