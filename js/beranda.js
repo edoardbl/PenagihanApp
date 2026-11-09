@@ -1,6 +1,5 @@
 // ==========================================
 // FILE: beranda.js
-// Deskripsi: Logika Halaman Beranda (Dashboard)
 // ==========================================
 
 import { api } from './api.js';
@@ -21,19 +20,15 @@ export const muatBeranda = async () => {
   showLoading('Memuat data beranda...');
   
   try {
-    // ⭐ Panggil API Beranda
     const res = await api.getBeranda(currentUser.nama, currentUser.level, [], 'semua');
-    
     if (res && res.dashboard) {
       renderDashboard(res.dashboard);
     }
     
-    // Ambil Tagihan Halaman 1
     const resTagihan = await api.getTagihanPage(currentUser.nama, currentUser.level, [], 'semua', 1, 10);
     if (resTagihan && resTagihan.list) {
       renderTagihanList(resTagihan.list);
     }
-    
   } catch (error) {
     showToast('Gagal memuat beranda: ' + error.message, 'error');
   } finally {
@@ -45,7 +40,6 @@ const renderDashboard = (d) => {
   const container = document.getElementById('dashboardContainer');
   if (!container) return;
 
-  // ⭐ Template Literals (Backtick) - Jauh lebih rapi dari string concatenation
   const html = `
     <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-bottom:15px;">
       <div style="background:#FFF8DC; padding:15px; border-radius:10px; border:2px solid #FFD700; text-align:center;">
@@ -70,12 +64,11 @@ const renderTagihanList = (list) => {
   const container = document.getElementById('listTagihanContainer');
   if (!container) return;
 
-  if (!list || list.length === 0) {
+  if (list.length === 0) {
     container.innerHTML = '<div style="text-align:center; padding:20px; color:#888;">Tidak ada tagihan</div>';
     return;
   }
 
-  // Render list menggunakan .map()
   const html = list.map(item => `
     <div onclick="bukaDetailAnggota('${item.noRek}')" style="background:white; padding:15px; border-radius:10px; margin-bottom:10px; border-left:4px solid ${item.menunggak ? '#C62828' : '#2E7D32'}; box-shadow:0 2px 5px rgba(0,0,0,0.05); cursor:pointer;">
       <div style="font-weight:800; color:#8B0000; font-size:14px;">${item.nama}</div>
