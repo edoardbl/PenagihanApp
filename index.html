@@ -1,1 +1,76 @@
 
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aplikasi Penagihan CU v2</title>
+  <style>
+    /* CSS Dasar (Bisa dipindah ke style.css nanti) */
+    * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    body { background: #FDF6E3; margin: 0; padding: 15px; }
+    .app-container { max-width: 500px; margin: 0 auto; }
+    
+    /* Form Styles */
+    .form-group { margin-bottom: 15px; }
+    .form-group label { display: block; font-size: 12px; font-weight: 700; color: #8B6914; margin-bottom: 5px; }
+    .form-input { width: 100%; padding: 12px; border: 2px solid #DDD; border-radius: 8px; font-size: 14px; }
+    .form-input:focus { border-color: #FFD700; outline: none; }
+    
+    .btn-primary { width: 100%; background: #8B0000; color: #FFD700; border: none; padding: 15px; border-radius: 8px; font-size: 16px; font-weight: 800; cursor: pointer; }
+    .btn-primary:hover { background: #A31515; }
+  </style>
+</head>
+<body>
+
+<div class="app-container">
+  
+  <!-- ⭐ VIEW: LOGIN (Tampil Pertama Kali) -->
+  <div id="viewLoginModern" style="display:block; padding-top:50px;">
+    <div style="text-align:center; margin-bottom:30px;">
+      <div style="font-size:60px; margin-bottom:10px;">🏦</div>
+      <h2 style="color:#8B0000; margin:0;">Aplikasi Penagihan</h2>
+      <p style="color:#8B6914; font-size:14px;">Silakan masuk untuk melanjutkan</p>
+    </div>
+
+    <div id="loginErrorModern" style="display:none; background:#FFEBEE; color:#C62828; padding:10px; border-radius:6px; font-size:13px; margin-bottom:15px; border-left:4px solid #C62828;"></div>
+
+    <div class="form-group">
+      <label>USERNAME</label>
+      <input type="text" id="inputUsernameModern" class="form-input" placeholder="Masukkan username">
+    </div>
+    <div class="form-group">
+      <label>PASSWORD</label>
+      <input type="password" id="inputPasswordModern" class="form-input" placeholder="Masukkan password">
+    </div>
+
+    <button id="btnLoginModern" class="btn-primary">MASUK APLIKASI</button>
+  </div>
+
+  <!-- ⭐ VIEW: BERANDA (Tampil Setelah Login) -->
+  <div id="viewBerandaModern" style="display:none;">
+    <div style="background:#8B0000; color:white; padding:15px; border-radius:10px; margin-bottom:15px; display:flex; justify-content:space-between; align-items:center;">
+      <div>
+        <div style="font-weight:800; font-size:16px;">Beranda</div>
+        <div style="font-size:11px; color:#FFD700;">Aplikasi Modern v2</div>
+      </div>
+      <div style="font-size:24px;">👤</div>
+    </div>
+
+    <div id="dashboardContainer">
+      <!-- Dashboard akan dirender oleh JS -->
+      <div style="text-align:center; padding:20px; color:#888;">⏳ Memuat dashboard...</div>
+    </div>
+
+    <h3 style="color:#8B0000; font-size:14px; margin-top:20px; margin-bottom:10px;">DAFTAR TAGIHAN</h3>
+    <div id="listTagihanContainer">
+      <!-- List Tagihan akan dirender oleh JS -->
+    </div>
+  </div>
+
+</div>
+
+<!-- ⭐ PENTING: Gunakan type="module" untuk mengaktifkan ES6 Imports -->
+<script type="module" src="https://raw.githubusercontent.com/USERNAME/REPO/main/js/main.js"></script>
+</body>
+</html>
